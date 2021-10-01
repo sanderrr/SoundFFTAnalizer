@@ -1,4 +1,4 @@
-
+п»ї
 /**
   ******************************************************************************
   * @file           : main.c
@@ -72,30 +72,30 @@ osThreadId defaultTaskHandle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-uint16_t ADC_value[base_len];                                //буффер АЦП
-uint16_t discrete_period = 1632;                             //делитель для формирования частоты дискретизации; зн-е: тактовая частота контроллера (72MHz)/dsicrete_period(1632)+1 = 44100Hz
-extern uint16_t new_disc_period;                             //переменная для механизма установки новой частоты дискретизации
-//uint8_t dataSend[4];                                       //байт данных для отправки по VCOM CDC
-float sum_cells_value[base_len/2];                           //сумма ячеек для частотной выборки
-float sum_cells_value_save[base_len/2];                      //ячейки хранения полученных выборок для последующей их отправки по Modbus
-uint8_t value[12] = {0,5,13,17,22,26,33,39,60,74,88,103};    //польз.уставки, критерии выбора частот для суммирования амплитуд, первая яч. должна быть ноль для выбора данных массива начиная с яч.1
-extern uint8_t DMAend;                                       //флаг прерываний DMA
-uint8_t count_cycle, countdpoint = 0;                        //счётчик циклов анализа, счетчик "мёртвых точек"
-uint8_t dpoint = 2;                                          //количество мертвых точек в механизме поиска максимумов
-uint16_t candidate = 0;                                      //кандидат на определившийся максимум;
-uint8_t n_cycle = 20;                                        //польз.уст. кол-ва циклов анализа
-uint8_t mode = 3;                                            // режимы работы основного цикла; 1-сумма амплитуд гармоник в диапазонах, 2-кол-во максимумов амплитуд гармоник
+uint16_t ADC_value[base_len];                                //Р±СѓС„С„РµСЂ РђР¦Рџ
+uint16_t discrete_period = 1632;                             //РґРµР»РёС‚РµР»СЊ РґР»СЏ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ С‡Р°СЃС‚РѕС‚С‹ РґРёСЃРєСЂРµС‚РёР·Р°С†РёРё; Р·РЅ-Рµ: С‚Р°РєС‚РѕРІР°СЏ С‡Р°СЃС‚РѕС‚Р° РєРѕРЅС‚СЂРѕР»Р»РµСЂР° (72MHz)/dsicrete_period(1632)+1 = 44100Hz
+extern uint16_t new_disc_period;                             //РїРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ РјРµС…Р°РЅРёР·РјР° СѓСЃС‚Р°РЅРѕРІРєРё РЅРѕРІРѕР№ С‡Р°СЃС‚РѕС‚С‹ РґРёСЃРєСЂРµС‚РёР·Р°С†РёРё
+//uint8_t dataSend[4];                                       //Р±Р°Р№С‚ РґР°РЅРЅС‹С… РґР»СЏ РѕС‚РїСЂР°РІРєРё РїРѕ VCOM CDC
+float sum_cells_value[base_len/2];                           //СЃСѓРјРјР° СЏС‡РµРµРє РґР»СЏ С‡Р°СЃС‚РѕС‚РЅРѕР№ РІС‹Р±РѕСЂРєРё
+float sum_cells_value_save[base_len/2];                      //СЏС‡РµР№РєРё С…СЂР°РЅРµРЅРёСЏ РїРѕР»СѓС‡РµРЅРЅС‹С… РІС‹Р±РѕСЂРѕРє РґР»СЏ РїРѕСЃР»РµРґСѓСЋС‰РµР№ РёС… РѕС‚РїСЂР°РІРєРё РїРѕ Modbus
+uint8_t value[12] = {0,5,13,17,22,26,33,39,60,74,88,103};    //РїРѕР»СЊР·.СѓСЃС‚Р°РІРєРё, РєСЂРёС‚РµСЂРёРё РІС‹Р±РѕСЂР° С‡Р°СЃС‚РѕС‚ РґР»СЏ СЃСѓРјРјРёСЂРѕРІР°РЅРёСЏ Р°РјРїР»РёС‚СѓРґ, РїРµСЂРІР°СЏ СЏС‡. РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РЅРѕР»СЊ РґР»СЏ РІС‹Р±РѕСЂР° РґР°РЅРЅС‹С… РјР°СЃСЃРёРІР° РЅР°С‡РёРЅР°СЏ СЃ СЏС‡.1
+extern uint8_t DMAend;                                       //С„Р»Р°Рі РїСЂРµСЂС‹РІР°РЅРёР№ DMA
+uint8_t count_cycle, countdpoint = 0;                        //СЃС‡С‘С‚С‡РёРє С†РёРєР»РѕРІ Р°РЅР°Р»РёР·Р°, СЃС‡РµС‚С‡РёРє "РјС‘СЂС‚РІС‹С… С‚РѕС‡РµРє"
+uint8_t dpoint = 2;                                          //РєРѕР»РёС‡РµСЃС‚РІРѕ РјРµСЂС‚РІС‹С… С‚РѕС‡РµРє РІ РјРµС…Р°РЅРёР·РјРµ РїРѕРёСЃРєР° РјР°РєСЃРёРјСѓРјРѕРІ
+uint16_t candidate = 0;                                      //РєР°РЅРґРёРґР°С‚ РЅР° РѕРїСЂРµРґРµР»РёРІС€РёР№СЃСЏ РјР°РєСЃРёРјСѓРј;
+uint8_t n_cycle = 20;                                        //РїРѕР»СЊР·.СѓСЃС‚. РєРѕР»-РІР° С†РёРєР»РѕРІ Р°РЅР°Р»РёР·Р°
+uint8_t mode = 3;                                            // СЂРµР¶РёРјС‹ СЂР°Р±РѕС‚С‹ РѕСЃРЅРѕРІРЅРѕРіРѕ С†РёРєР»Р°; 1-СЃСѓРјРјР° Р°РјРїР»РёС‚СѓРґ РіР°СЂРјРѕРЅРёРє РІ РґРёР°РїР°Р·РѕРЅР°С…, 2-РєРѕР»-РІРѕ РјР°РєСЃРёРјСѓРјРѕРІ Р°РјРїР»РёС‚СѓРґ РіР°СЂРјРѕРЅРёРє
 //int32_t av_param[128];
 //int32_t av_param_result[128];
 //extern int32_t fft(uint16_t *massiv);
-float In[base_len*2];                                        //входной массив анализа FFT
+float In[base_len*2];                                        //РІС…РѕРґРЅРѕР№ РјР°СЃСЃРёРІ Р°РЅР°Р»РёР·Р° FFT
 //short InShort[base_len*2];
-//short Out[base_len*2];                                     //выходной массив анализа FFT, яч. соотв.: 0 - реальное число, 1 - мнимое и т.д. для 2,3; 4,5 ... Аналогично и входной массив
-float full_analysis[base_len];                               //готовый результат после амплитудного анализа
-uint8_t count_max_freq[base_len/2];                          //массив для подсчета максимумов в соответствии с ячейками амплитудного анализа
+//short Out[base_len*2];                                     //РІС‹С…РѕРґРЅРѕР№ РјР°СЃСЃРёРІ Р°РЅР°Р»РёР·Р° FFT, СЏС‡. СЃРѕРѕС‚РІ.: 0 - СЂРµР°Р»СЊРЅРѕРµ С‡РёСЃР»Рѕ, 1 - РјРЅРёРјРѕРµ Рё С‚.Рґ. РґР»СЏ 2,3; 4,5 ... РђРЅР°Р»РѕРіРёС‡РЅРѕ Рё РІС…РѕРґРЅРѕР№ РјР°СЃСЃРёРІ
+float full_analysis[base_len];                               //РіРѕС‚РѕРІС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚ РїРѕСЃР»Рµ Р°РјРїР»РёС‚СѓРґРЅРѕРіРѕ Р°РЅР°Р»РёР·Р°
+uint8_t count_max_freq[base_len/2];                          //РјР°СЃСЃРёРІ РґР»СЏ РїРѕРґСЃС‡РµС‚Р° РјР°РєСЃРёРјСѓРјРѕРІ РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ СЏС‡РµР№РєР°РјРё Р°РјРїР»РёС‚СѓРґРЅРѕРіРѕ Р°РЅР°Р»РёР·Р°
 uint8_t count_max_freq_save[base_len/2];
 size_t fre;
-float full_analysis_save_param = 0;                          //переменная для механизма поиска максимумов
+float full_analysis_save_param = 0;                          //РїРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ РјРµС…Р°РЅРёР·РјР° РїРѕРёСЃРєР° РјР°РєСЃРёРјСѓРјРѕРІ
 uint8_t busy = 0;
 uint8_t average_factor = 5;
 uint16_t button_indicate = 0;
@@ -186,9 +186,9 @@ float FlashRead(uint32_t address)
     return (*(__IO float *)(&data));
 }
 
-extern void ModbusRTUTask(void const * argument); //задача Modbus из mbtask.c
+extern void ModbusRTUTask(void const * argument); //Р·Р°РґР°С‡Р° Modbus РёР· mbtask.c
 
-//функция поиска максимумов
+//С„СѓРЅРєС†РёСЏ РїРѕРёСЃРєР° РјР°РєСЃРёРјСѓРјРѕРІ
 void max_search(void) 
 { 
 	for (uint16_t i=1; i<base_len/2; i++) 
@@ -218,7 +218,7 @@ void max_search_reset(void)
 	full_analysis_save_param = 0;
 }
 
-//функция запуска сбора данных с АЦП (запуск ДМА и ТИМ)
+//С„СѓРЅРєС†РёСЏ Р·Р°РїСѓСЃРєР° СЃР±РѕСЂР° РґР°РЅРЅС‹С… СЃ РђР¦Рџ (Р·Р°РїСѓСЃРє Р”РњРђ Рё РўРРњ)
 void start_timdma(void) 
 {
   if(HAL_TIM_Base_Start_IT(&htim3) != HAL_OK) Error_Handler();
@@ -226,7 +226,7 @@ void start_timdma(void)
   if(HAL_ADC_Start_DMA(&hadc1,(uint32_t*)&ADC_value,base_len) != HAL_OK) Error_Handler();
 }
 
-//функция останова сбора данных с АЦП (стоп ДМА и ТИМ)
+//С„СѓРЅРєС†РёСЏ РѕСЃС‚Р°РЅРѕРІР° СЃР±РѕСЂР° РґР°РЅРЅС‹С… СЃ РђР¦Рџ (СЃС‚РѕРї Р”РњРђ Рё РўРРњ)
 void stop_timdma(void)
 { 
 	HAL_ADC_Stop_DMA(&hadc1);
@@ -234,7 +234,7 @@ void stop_timdma(void)
 	HAL_TIM_Base_Stop_IT(&htim3);
 }
 
-//функция перевода из int32 в uint8
+//С„СѓРЅРєС†РёСЏ РїРµСЂРµРІРѕРґР° РёР· int32 РІ uint8
 void u8from32 (uint8_t b[4], int32_t u32) 
 {
     b[3] = (uint8_t)u32;
@@ -243,14 +243,14 @@ void u8from32 (uint8_t b[4], int32_t u32)
     b[0] = (uint8_t)(u32>>=8);
 }
 
-//функция Сумма ячеек (старт.яч., кон.яч.,буффер)
+//С„СѓРЅРєС†РёСЏ РЎСѓРјРјР° СЏС‡РµРµРє (СЃС‚Р°СЂС‚.СЏС‡., РєРѕРЅ.СЏС‡.,Р±СѓС„С„РµСЂ)
 float sum_cells(uint8_t start, uint8_t end, float *buffer, float summ) 
 {
 	float sum_cell=0;
-	//стартовая ячейка start - из основного алгоритма (предыдущая конечная +1)
+	//СЃС‚Р°СЂС‚РѕРІР°СЏ СЏС‡РµР№РєР° start - РёР· РѕСЃРЅРѕРІРЅРѕРіРѕ Р°Р»РіРѕСЂРёС‚РјР° (РїСЂРµРґС‹РґСѓС‰Р°СЏ РєРѕРЅРµС‡РЅР°СЏ +1)
 	for (uint8_t i=start; i<end+1; i++)
 	{
-		sum_cell+=buffer[i]; //каждое значение суммируем в sum_cell
+		sum_cell+=buffer[i]; //РєР°Р¶РґРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃСѓРјРјРёСЂСѓРµРј РІ sum_cell
 	}
 	sum_cell+=summ;
 	return sum_cell;
@@ -262,7 +262,7 @@ void sound_analysis(void const * argument)
 	while(1) 
 	{
 	//HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-	//массив с данными АЦП готов
+	//РјР°СЃСЃРёРІ СЃ РґР°РЅРЅС‹РјРё РђР¦Рџ РіРѕС‚РѕРІ
 		if (DMAend == 1) 
 		{
 			DMAend = 0;
@@ -270,26 +270,26 @@ void sound_analysis(void const * argument)
 			{
 				for (int i=0; i<base_len; i++) 
 				{
-					In[i*2]=ADC_value[i];  //реальную часть заполняем данными с АЦП
-					//In[i*2]=0;           //для проверки, если раскомментировать, то результат БПФ - нули (это значит, что он работает верно)
-					In[i*2+1]=0;           //мнимую - нулями
+					In[i*2]=ADC_value[i];  //СЂРµР°Р»СЊРЅСѓСЋ С‡Р°СЃС‚СЊ Р·Р°РїРѕР»РЅСЏРµРј РґР°РЅРЅС‹РјРё СЃ РђР¦Рџ
+					//In[i*2]=0;           //РґР»СЏ РїСЂРѕРІРµСЂРєРё, РµСЃР»Рё СЂР°СЃРєРѕРјРјРµРЅС‚РёСЂРѕРІР°С‚СЊ, С‚Рѕ СЂРµР·СѓР»СЊС‚Р°С‚ Р‘РџР¤ - РЅСѓР»Рё (СЌС‚Рѕ Р·РЅР°С‡РёС‚, С‡С‚Рѕ РѕРЅ СЂР°Р±РѕС‚Р°РµС‚ РІРµСЂРЅРѕ)
+					In[i*2+1]=0;           //РјРЅРёРјСѓСЋ - РЅСѓР»СЏРјРё
 				}
 				arm_cfft_f32(&arm_cfft_sR_f32_len256,In,0,1);
 				arm_cmplx_mag_f32(In,full_analysis,base_len);
 			}
-			//режим 1 - сумма амплитуд заданных диапазонов ячеек
+			//СЂРµР¶РёРј 1 - СЃСѓРјРјР° Р°РјРїР»РёС‚СѓРґ Р·Р°РґР°РЅРЅС‹С… РґРёР°РїР°Р·РѕРЅРѕРІ СЏС‡РµРµРє
 			if (mode == 1) 
 			{ 
 				for (uint8_t i=0; i<11; i++)
 				{
-					sum_cells_value[i]=sum_cells((value[i]+1),value[i+1],full_analysis,sum_cells_value[i]); //sum_cells пример:(значение параметра[0] +1, занчение параметра[1], массив с готовыми данными)
+					sum_cells_value[i]=sum_cells((value[i]+1),value[i+1],full_analysis,sum_cells_value[i]); //sum_cells РїСЂРёРјРµСЂ:(Р·РЅР°С‡РµРЅРёРµ РїР°СЂР°РјРµС‚СЂР°[0] +1, Р·Р°РЅС‡РµРЅРёРµ РїР°СЂР°РјРµС‚СЂР°[1], РјР°СЃСЃРёРІ СЃ РіРѕС‚РѕРІС‹РјРё РґР°РЅРЅС‹РјРё)
 				}
 			}
 			if (mode == 2) 
 			{
 				max_search();
 			}
-			//режим 3 - сумма амплитуд каждой ячейки
+			//СЂРµР¶РёРј 3 - СЃСѓРјРјР° Р°РјРїР»РёС‚СѓРґ РєР°Р¶РґРѕР№ СЏС‡РµР№РєРё
 			if (mode >= 3) 
 			{
 				for (uint8_t i=1; i<base_len/2; i++) 
@@ -298,22 +298,22 @@ void sound_analysis(void const * argument)
 				}
 			}
 			count_cycle++;
-			//в случае с "больше" - то это надо тогда, когда вдруг от юзера придёт уставка n_cycle меньше, а count_cycle уже перешагнёт эту уставку
+			//РІ СЃР»СѓС‡Р°Рµ СЃ "Р±РѕР»СЊС€Рµ" - С‚Рѕ СЌС‚Рѕ РЅР°РґРѕ С‚РѕРіРґР°, РєРѕРіРґР° РІРґСЂСѓРі РѕС‚ СЋР·РµСЂР° РїСЂРёРґС‘С‚ СѓСЃС‚Р°РІРєР° n_cycle РјРµРЅСЊС€Рµ, Р° count_cycle СѓР¶Рµ РїРµСЂРµС€Р°РіРЅС‘С‚ СЌС‚Сѓ СѓСЃС‚Р°РІРєСѓ
 			if (count_cycle == n_cycle || count_cycle > n_cycle) 
 			{ 
 				  /*for (uint8_t i=0; i<128; i++) {
-					  av_param_result[i] = av_param[i]/n_cycle; //сумму делим на количество циклов, т.о. усредняем результат за 1с.
-					  av_param[i] = 0; //обнуляем ячейки с суммами
+					  av_param_result[i] = av_param[i]/n_cycle; //СЃСѓРјРјСѓ РґРµР»РёРј РЅР° РєРѕР»РёС‡РµСЃС‚РІРѕ С†РёРєР»РѕРІ, С‚.Рѕ. СѓСЃСЂРµРґРЅСЏРµРј СЂРµР·СѓР»СЊС‚Р°С‚ Р·Р° 1СЃ.
+					  av_param[i] = 0; //РѕР±РЅСѓР»СЏРµРј СЏС‡РµР№РєРё СЃ СЃСѓРјРјР°РјРё
 				  }*/
 				count_cycle = 0;
 				if (mode == 1) 
 				{
 					for (uint8_t i=0; i<11; i++) 
 					{
-						sum_cells_value_save[i]=sum_cells_value[i];    //сохраняем полученные результаты сумм в другую переменную
-						sum_cells_value[i] = 0;                        // обнуляем переменную с результатами*/
-						/*u8from32(dataSend, sum_cells_value_save[i]); //переводим ячейки полученного результата в uint8 (для COM)
-						HAL_Delay(10); //задержка 10мс*/
+						sum_cells_value_save[i]=sum_cells_value[i];    //СЃРѕС…СЂР°РЅСЏРµРј РїРѕР»СѓС‡РµРЅРЅС‹Рµ СЂРµР·СѓР»СЊС‚Р°С‚С‹ СЃСѓРјРј РІ РґСЂСѓРіСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ
+						sum_cells_value[i] = 0;                        // РѕР±РЅСѓР»СЏРµРј РїРµСЂРµРјРµРЅРЅСѓСЋ СЃ СЂРµР·СѓР»СЊС‚Р°С‚Р°РјРё*/
+						/*u8from32(dataSend, sum_cells_value_save[i]); //РїРµСЂРµРІРѕРґРёРј СЏС‡РµР№РєРё РїРѕР»СѓС‡РµРЅРЅРѕРіРѕ СЂРµР·СѓР»СЊС‚Р°С‚Р° РІ uint8 (РґР»СЏ COM)
+						HAL_Delay(10); //Р·Р°РґРµСЂР¶РєР° 10РјСЃ*/
 					}
 				}
 				if (mode == 2) 
@@ -343,7 +343,7 @@ void sound_analysis(void const * argument)
 					busy=0;
 				}
 			}
-			start_timdma(); //запускаем опрос АЦП
+			start_timdma(); //Р·Р°РїСѓСЃРєР°РµРј РѕРїСЂРѕСЃ РђР¦Рџ
 		}
 	}
 }
@@ -369,7 +369,7 @@ void Tenso(void const * argument) {
 			HAL_ADCEx_Calibration_Start(&hadc1);
 			HAL_ADCEx_InjectedStart(&hadc1);
 			HAL_ADCEx_InjectedPollForConversion(&hadc1, 1);
-			ResultVref = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1);//Резльтат АЦП инжектированного канала 1 - значение опорного 1,2В
+			ResultVref = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1);//Р РµР·Р»СЊС‚Р°С‚ РђР¦Рџ РёРЅР¶РµРєС‚РёСЂРѕРІР°РЅРЅРѕРіРѕ РєР°РЅР°Р»Р° 1 - Р·РЅР°С‡РµРЅРёРµ РѕРїРѕСЂРЅРѕРіРѕ 1,2Р’
 			if (ResultVref>1490) 
 			{
 			//ResultVref_r = ((ResultVref_r*19)+ResultVref)/20;
@@ -383,21 +383,21 @@ void Tenso(void const * argument) {
 			ResultTenzo = 0;
 			//VoltPerBit = (1.2/ResultVref_r);//1.00895;
 			//ResultTemp = VoltPerBit*HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_2);
-			//InsertTemp = ((V25-ResultTemp)/avg_slope)+25;           //вычисляем температуру встроенного датчика.
-			VoltSource = VoltPerBit*ResultPowerTenzo_r*3.844906445;   //находим U питания тензо. В конце к-т делителя питания тензо на ОУ
-			//VoltTenso = (VoltPerBit*ResultTenzo_r)/100.66;          //110 - аппаратный к-т усиления на ОУ 30мВ-->3.3В
-			VoltTenso = Vtenso_k*(VoltPerBit*ResultTenzo_r)+Vtenso_b; //уравнение прямой f(x) построенной по х-ке выхода платы тензо 30мВ-->3.3В. Результат мВ с тензо.
+			//InsertTemp = ((V25-ResultTemp)/avg_slope)+25;           //РІС‹С‡РёСЃР»СЏРµРј С‚РµРјРїРµСЂР°С‚СѓСЂСѓ РІСЃС‚СЂРѕРµРЅРЅРѕРіРѕ РґР°С‚С‡РёРєР°.
+			VoltSource = VoltPerBit*ResultPowerTenzo_r*3.844906445;   //РЅР°С…РѕРґРёРј U РїРёС‚Р°РЅРёСЏ С‚РµРЅР·Рѕ. Р’ РєРѕРЅС†Рµ Рє-С‚ РґРµР»РёС‚РµР»СЏ РїРёС‚Р°РЅРёСЏ С‚РµРЅР·Рѕ РЅР° РћРЈ
+			//VoltTenso = (VoltPerBit*ResultTenzo_r)/100.66;          //110 - Р°РїРїР°СЂР°С‚РЅС‹Р№ Рє-С‚ СѓСЃРёР»РµРЅРёСЏ РЅР° РћРЈ 30РјР’-->3.3Р’
+			VoltTenso = Vtenso_k*(VoltPerBit*ResultTenzo_r)+Vtenso_b; //СѓСЂР°РІРЅРµРЅРёРµ РїСЂСЏРјРѕР№ f(x) РїРѕСЃС‚СЂРѕРµРЅРЅРѕР№ РїРѕ С…-РєРµ РІС‹С…РѕРґР° РїР»Р°С‚С‹ С‚РµРЅР·Рѕ 30РјР’-->3.3Р’. Р РµР·СѓР»СЊС‚Р°С‚ РјР’ СЃ С‚РµРЅР·Рѕ.
 			//mVoltPerVolt = (VoltTenso/VoltSource)*1000;
-			mVoltPerVolt = (VoltTenso/VoltSource); //Получаем мВ/В
+			mVoltPerVolt = (VoltTenso/VoltSource); //РџРѕР»СѓС‡Р°РµРј РјР’/Р’
 			if (thermoCompWt == 1) 
 			{
 				mVoltPerVolt = mVoltPerVolt-(Thermocomp_k*temperature+Thermocomp_b);
 			}
-			mVoltPerVolt = Ftenso_exp_factor*mVoltPerVolt+(1-Ftenso_exp_factor)*mVoltPerVolt_prev;  //использована одна из реализаций экспоненциального фильтра
+			mVoltPerVolt = Ftenso_exp_factor*mVoltPerVolt+(1-Ftenso_exp_factor)*mVoltPerVolt_prev;  //РёСЃРїРѕР»СЊР·РѕРІР°РЅР° РѕРґРЅР° РёР· СЂРµР°Р»РёР·Р°С†РёР№ СЌРєСЃРїРѕРЅРµРЅС†РёР°Р»СЊРЅРѕРіРѕ С„РёР»СЊС‚СЂР°
 			mVoltPerVolt_prev = mVoltPerVolt;
 			Ftenso_r = FtensoX1 + (mVoltPerVolt-tensoX1)*((FtensoX2-FtensoX1)/(tensoX2-tensoX1));
 			Ftenso_r = Ftenso_r - InstZero;
-			Ftenso = (roundf(Ftenso_r*discrete))/discrete;                                          //округляем к параметру дискретности
+			Ftenso = (roundf(Ftenso_r*discrete))/discrete;                                          //РѕРєСЂСѓРіР»СЏРµРј Рє РїР°СЂР°РјРµС‚СЂСѓ РґРёСЃРєСЂРµС‚РЅРѕСЃС‚Рё
 			busy = 0;
 		}
 		if (run_first == 1) 
@@ -419,17 +419,17 @@ void Tenso(void const * argument) {
 			blocked = 0;
 			switch (saveSettings) 
 			{
-				case 0:                     //установить нулевую точку
+				case 0:                     //СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РЅСѓР»РµРІСѓСЋ С‚РѕС‡РєСѓ
 					blocked = 1;
 					tensoX1 = mVoltPerVolt;
 					saveSettings = 100;
 					break;
-				case 1:                     //установить вторую точку
+				case 1:                     //СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‚РѕСЂСѓСЋ С‚РѕС‡РєСѓ
 					blocked = 1;
 					tensoX2 = mVoltPerVolt;
 					saveSettings = 111;
 					break;
-				case 5:                     //прочитать данные из флеш
+				case 5:                     //РїСЂРѕС‡РёС‚Р°С‚СЊ РґР°РЅРЅС‹Рµ РёР· С„Р»РµС€
 					run_first = 1;
 					tensoX1 = FlashRead(FLASH_VAR_X1);
 					FtensoX1 = FlashRead(FLASH_VAR_FX1);
@@ -444,20 +444,20 @@ void Tenso(void const * argument) {
 					HAL_Delay(1000);
 					run_first = 0;
 					break;
-				case 7:                     //установка нуля
+				case 7:                     //СѓСЃС‚Р°РЅРѕРІРєР° РЅСѓР»СЏ
 					blocked = 1;
 					InstZero = Ftenso;
 					saveSettings = 70;
 					break;
-				case 8:                     //сброс InstZero - установки нуля
+				case 8:                     //СЃР±СЂРѕСЃ InstZero - СѓСЃС‚Р°РЅРѕРІРєРё РЅСѓР»СЏ
 					blocked = 1;
 					InstZero = 0;
 					saveSettings = 80;
 					break;
-				case 10:                    //записать данные из ОЗУ во Флеш
+				case 10:                    //Р·Р°РїРёСЃР°С‚СЊ РґР°РЅРЅС‹Рµ РёР· РћР—РЈ РІРѕ Р¤Р»РµС€
 					blocked = 1;
-					FlashErase(FLASH_VAR_X1);                         //стираем всю страницу флеш
-					WriteToFlash(FLASH_VAR_X1, tensoX1);              //пишем флеш
+					FlashErase(FLASH_VAR_X1);                         //СЃС‚РёСЂР°РµРј РІСЃСЋ СЃС‚СЂР°РЅРёС†Сѓ С„Р»РµС€
+					WriteToFlash(FLASH_VAR_X1, tensoX1);              //РїРёС€РµРј С„Р»РµС€
 					WriteToFlash(FLASH_VAR_FX1, FtensoX1);
 					WriteToFlash(FLASH_VAR_X2, tensoX2);
 					WriteToFlash(FLASH_VAR_FX2, FtensoX2);
@@ -466,7 +466,7 @@ void Tenso(void const * argument) {
 					WriteToFlash(FLASH_THERMOCOMP_K, Thermocomp_k);
 					WriteToFlash(FLASH_THERMOCOMP_B, Thermocomp_b);
 					run_first = 1;
-					tensoX1 = FlashRead(FLASH_VAR_X1);                //читаем из флеш
+					tensoX1 = FlashRead(FLASH_VAR_X1);                //С‡РёС‚Р°РµРј РёР· С„Р»РµС€
 					FtensoX1 = FlashRead(FLASH_VAR_FX1);
 					tensoX2 = FlashRead(FLASH_VAR_X2);
 					FtensoX2 = FlashRead(FLASH_VAR_FX2);
@@ -562,16 +562,16 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  osThreadDef(sound_analysis, sound_analysis, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);             //задача для анализа звука
+  osThreadDef(sound_analysis, sound_analysis, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);             //Р·Р°РґР°С‡Р° РґР»СЏ Р°РЅР°Р»РёР·Р° Р·РІСѓРєР°
   osThreadCreate(osThread(sound_analysis), NULL);
   fre=xPortGetFreeHeapSize();
-  osThreadDef(ModbusRTUTask, ModbusRTUTask, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);               //задача Modbus
+  osThreadDef(ModbusRTUTask, ModbusRTUTask, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);               //Р·Р°РґР°С‡Р° Modbus
   osThreadCreate(osThread(ModbusRTUTask), NULL);
   fre=xPortGetFreeHeapSize();
-  osThreadDef(Tenso, Tenso, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);                               //задача моргания светодиодом
+  osThreadDef(Tenso, Tenso, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);                               //Р·Р°РґР°С‡Р° РјРѕСЂРіР°РЅРёСЏ СЃРІРµС‚РѕРґРёРѕРґРѕРј
   osThreadCreate(osThread(Tenso), NULL);
   fre=xPortGetFreeHeapSize();
-  osThreadDef(LED_ReadyOSstate, LED_ReadyOSstate, osPriorityAboveNormal, 0, configMINIMAL_STACK_SIZE);    //задача моргания светодиодом
+  osThreadDef(LED_ReadyOSstate, LED_ReadyOSstate, osPriorityAboveNormal, 0, configMINIMAL_STACK_SIZE);    //Р·Р°РґР°С‡Р° РјРѕСЂРіР°РЅРёСЏ СЃРІРµС‚РѕРґРёРѕРґРѕРј
   osThreadCreate(osThread(LED_ReadyOSstate), NULL);
   fre=xPortGetFreeHeapSize();
   /* USER CODE END RTOS_THREADS */
@@ -916,8 +916,8 @@ static void MX_GPIO_Init(void)
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc) 
 {
 	continous_i++;
-	ResultPowerTenzo = ResultPowerTenzo+(HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_1)); //Результат АЦП инжектированного канала 2 - зачение напряжения питания тензо.
-	ResultTenzo = ResultTenzo+(HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_2));           //Результат АЦП инжектированного канала 3 - значение тензо.
+	ResultPowerTenzo = ResultPowerTenzo+(HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_1)); //Р РµР·СѓР»СЊС‚Р°С‚ РђР¦Рџ РёРЅР¶РµРєС‚РёСЂРѕРІР°РЅРЅРѕРіРѕ РєР°РЅР°Р»Р° 2 - Р·Р°С‡РµРЅРёРµ РЅР°РїСЂСЏР¶РµРЅРёСЏ РїРёС‚Р°РЅРёСЏ С‚РµРЅР·Рѕ.
+	ResultTenzo = ResultTenzo+(HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_2));           //Р РµР·СѓР»СЊС‚Р°С‚ РђР¦Рџ РёРЅР¶РµРєС‚РёСЂРѕРІР°РЅРЅРѕРіРѕ РєР°РЅР°Р»Р° 3 - Р·РЅР°С‡РµРЅРёРµ С‚РµРЅР·Рѕ.
 	already_started = 0;
 	count_empty_cycles = 0;
 	if (continous_i<averageTenzo) 
@@ -946,11 +946,11 @@ void StartDefaultTask(void const * argument)
 			DMAend=0;
 			start_timdma();
 	}
-	//для настройки микрофона, если значение АЦП превышает заданное
+	//РґР»СЏ РЅР°СЃС‚СЂРѕР№РєРё РјРёРєСЂРѕС„РѕРЅР°, РµСЃР»Рё Р·РЅР°С‡РµРЅРёРµ РђР¦Рџ РїСЂРµРІС‹С€Р°РµС‚ Р·Р°РґР°РЅРЅРѕРµ
 	if (ADC_value[0]>=4090)
 	{ 
 
-		HAL_GPIO_WritePin(GPIOB, LED_MAX_PB11_Pin, GPIO_PIN_SET); //зажигаем светодиод
+		HAL_GPIO_WritePin(GPIOB, LED_MAX_PB11_Pin, GPIO_PIN_SET); //Р·Р°Р¶РёРіР°РµРј СЃРІРµС‚РѕРґРёРѕРґ
 		osDelay(50);
 	}
 	else HAL_GPIO_WritePin(GPIOB, LED_MAX_PB11_Pin, GPIO_PIN_RESET);
