@@ -75,22 +75,16 @@ osThreadId defaultTaskHandle;
 uint16_t ADC_value[base_len];                                //буффер АЦП
 uint16_t discrete_period = 1632;                             //делитель для формирования частоты дискретизации; зн-е: тактовая частота контроллера (72MHz)/dsicrete_period(1632)+1 = 44100Hz
 extern uint16_t new_disc_period;                             //переменная для механизма установки новой частоты дискретизации
-//uint8_t dataSend[4];                                       //байт данных для отправки по VCOM CDC
 float sum_cells_value[base_len/2];                           //сумма ячеек для частотной выборки
 float sum_cells_value_save[base_len/2];                      //ячейки хранения полученных выборок для последующей их отправки по Modbus
 uint8_t value[12] = {0,5,13,17,22,26,33,39,60,74,88,103};    //польз.уставки, критерии выбора частот для суммирования амплитуд, первая яч. должна быть ноль для выбора данных массива начиная с яч.1
 extern uint8_t DMAend;                                       //флаг прерываний DMA
-uint8_t count_cycle, countdpoint = 0;                        //счётчик циклов анализа, счетчик "мёртвых точек"
+uint8_t count_cycle = 0, countdpoint = 0;                    //счётчик циклов анализа, счетчик "мёртвых точек"
 uint8_t dpoint = 2;                                          //количество мертвых точек в механизме поиска максимумов
 uint16_t candidate = 0;                                      //кандидат на определившийся максимум;
 uint8_t n_cycle = 20;                                        //польз.уст. кол-ва циклов анализа
 uint8_t mode = 3;                                            // режимы работы основного цикла; 1-сумма амплитуд гармоник в диапазонах, 2-кол-во максимумов амплитуд гармоник
-//int32_t av_param[128];
-//int32_t av_param_result[128];
-//extern int32_t fft(uint16_t *massiv);
 float In[base_len*2];                                        //входной массив анализа FFT
-//short InShort[base_len*2];
-//short Out[base_len*2];                                     //выходной массив анализа FFT, яч. соотв.: 0 - реальное число, 1 - мнимое и т.д. для 2,3; 4,5 ... Аналогично и входной массив
 float full_analysis[base_len];                               //готовый результат после амплитудного анализа
 uint8_t count_max_freq[base_len/2];                          //массив для подсчета максимумов в соответствии с ячейками амплитудного анализа
 uint8_t count_max_freq_save[base_len/2];
@@ -100,7 +94,7 @@ uint8_t busy = 0;
 uint8_t average_factor = 5;
 uint16_t button_indicate = 0;
 //uint16_t ResultInject[3];
-float VoltSource, VoltTenso, mVoltPerVolt, mVoltPerVolt_prev, Ftenso, InstZero = 0;
+float VoltSource, VoltTenso, mVoltPerVolt, mVoltPerVolt_prev, Ftenso, InstZero;
 float VoltPerBit = 0.0008301691405;                          //ADC
 uint8_t countFtensoAv = 0;
 float FtensoAv[5];
@@ -115,10 +109,7 @@ uint8_t saveSettings = 77;
 uint8_t blocked = 1;
 float ResultPowerTenzo_r, ResultTenzo_r;
 float ResultVref_r = 1500;
-volatile uint32_t ResultVref, ResultPowerTenzo, ResultTenzo = 0;
-//float InsertTemp, ResultTemp = 0;
-//float V25 = 1.41;
-//float avg_slope = 0.0043;
+volatile uint32_t ResultVref, ResultPowerTenzo, ResultTenzo;
 volatile uint16_t continous_i;
 const uint16_t averageTenzo = 1000;
 volatile uint8_t already_started = 0;
